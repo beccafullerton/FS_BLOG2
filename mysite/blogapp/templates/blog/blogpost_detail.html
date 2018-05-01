@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block nav %}
+{% load static %}
+	<div class="navbar col-xs-12">
+		<a href="{% url 'index' %}"><img class="home_arrow" alt="home" src="{% static 'blog/home_arrow.png' %}"></a>
+		|
+		<a href="{% url 'blogapp:create_post' %}"> + post</a>
+	</div>
+{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+
+<div class="container" id="post_detail">
+	<div class="post_title"> {{ object.title }} </div>
+	<div class="post_content"> {{ object.content|linebreaks }} </div>
+	<div >author: <a href="{% url 'blogapp:author_profile' object.author %}" class="post_author"> {{ object.author }} </a></div> <!-- author detail link not yet defined -->
+</div>
+
+{% endblock %}

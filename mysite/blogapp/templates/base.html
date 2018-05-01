@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	{% block title %}<title>FS Blog</title>{% endblock %}
+	{% load static %}
+	
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<!-- Latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	
+	<script src="{% static 'blog/jquery.js' %}" type="text/javascript"></script>
+	
+	<!-- stylesheets -->
+	<link rel="stylesheet" type="text/css" href="{% static 'blog/style.css' %}" />
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+	<div class="container-fluid">
+		{% block nav %}
+			
+		{% endblock %}
+		{% block content %}<!-- default content text (typically empty) -->{% endblock %}
+	</div>
+</body>
+</html>

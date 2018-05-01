@@ -1,0 +1,11 @@
+{% extends 'base_postModification.html' %}
+
+{% block formContent%}
+
+<div class="container" id="post_delete">
+	<div id="post_delete_dialogue">
+		Are you sure you want to delete "{{ object }}"?
+	</div>
+	<input class="submit_btn blue_btn" type="submit" value="Delete" />
+
+{% endblock %}

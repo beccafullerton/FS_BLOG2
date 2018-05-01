@@ -1,0 +1,185 @@
+{% extends 'blog/blog_base.html' %}
+{% load static %}
+{% csrf_token %}
+
+
+{% block title %}
+	<title>FS Blog Home</title>
+{% endblock %}
+
+{% block modals %}
+	<div id="filter-modal" class="modal fade" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h3 class="modal-title">Filter</h3>
+				</div>
+				<div class="modal-body">
+					<ul class="nav nav-tabs" role="tablist">
+						<li role="presentation" class="active">
+							<a href="#people" aria-controls="people" role="tab" data-toggle="tab">Authors</a>
+						</li>
+					</ul>
+				</div>
+				<div class="tab-content wbhb-tab-pane">
+					<div role="tabpanel" class="tab-pane active" id="people">
+						<table id="people-table" style="width: 100%;">
+							<thead>
+								<tr>
+									<th>Name</th>
+								</tr>
+							</thead>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block content %}
+	<div id="home_splash" class="row">
+		<div id="blog_videoScribe_container" class="col-md-6">
+			<video muted playsinline autoplay preload="auto" id="blog_videoScribe">
+				<source src="{% static 'blog/blog_videoScribing.mp4' %}" type="video/mp4">
+			</video>
+		</div>
+		<div id="homesplash_right" class="col-md-6">
+			<div id="homesplash_text_container">
+				<div id="homesplash_text_buttons">
+					<div class="homesplash_text">a meta commentary on the creation thereof</div>
+					<div id="login_btn_container">
+						<a href="{% url 'blogapp:create_account' %}" id="join_btn" class="btn blue_btn">join</a>
+						<a href="{% url 'login' %}" id="login_btn" class="btn">login</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	{% include "blog/home_navbar.html" %}
+	<div id="home_content">
+		<div class="new_posts row">
+			<div class="col-sm-2"></div>
+			<button type="button" value="Refresh Page" onClick="window.location.reload()" id="new_posts" class="col-sm-8 col-lg-7 btn btn-primary">
+			</button>
+			<div class="col-sm-2 col-lg-3"></div>
+		</div>
+		<div id="posts" class="row">
+		</div>
+	</div>
+{% endblock %}
+
+
+{% block javascript %}
+	<script type="text/javascript">
+		var filters = [];
+		var info_type = ''
+		var data = null
+		var post_ids = []
+		var date = new Date();
+		
+		var source_url = 'blog/posts?format=default&info_type=&filter='
+		
+		$(document).ready(function(){
+			$('#homesplash_text_buttons').hide(0);
+			var width = $(window).width(); // New width
+			if (width < 1100 ) {
+				$('#blog_videoScribe_container').removeClass('col-md-6').addClass('col-md-7');
+				$('#homesplash_right').removeClass('col-md-6').addClass('col-md-5');
+			}
+			info_type = 'posts';
+			url = 'blog/post_list/'
+			successFunction = function(data){
+				sizeTitleEqualizerSpace(data, '#posts');
+				getIDs();
+				getFilterTable();
+			}
+			ajaxCall(url, 'GET', null, processData=false, contentType=false, successFunction);
+			
+			function getIDs() {
+				info_type = 'ids'
+				url = source_url.replace('&info_type=', '&info_type=' + info_type);
+				url = url.replace('&filter=', '');
+				successFunction = function(data) {
+					post_ids = data;
+					console.log(post_ids)
+					setInterval(checkForNewPosts, 1000 * 60);
+				}
+				ajaxCall(url, 'GET', null, processData=true, contentType='application/json', successFunction);
+			}
+			
+			var checkForNewPosts = function() {
+				console.log('called')
+				info_type = 'update_ids'
+				url = source_url.replace('&info_type=', '&info_type=' + info_type);
+				url = url.replace('&filter=', '');
+				successFunction = function(response) {
+					console.log(response)
+					text = ' new post'
+					if (response > 1) {
+						text += 's'
+					}
+					no_new_posts = JSON.stringify(response)
+					console.log(no_new_posts)
+					if (no_new_posts != '["no new posts"]') {
+						$('#new_posts').html(no_new_posts + text)
+						$('#new_posts').show()
+					}
+				}
+				ajaxCall(url, 'GET', {'current_post_ids': post_ids}, processData=true, contentType='application/json', successFunction);
+			}
+			function getFilterTable() {
+				info_type = 'authors'
+				filter = 'author'
+				url = source_url.replace('&info_type=', '&info_type=' + info_type);
+				url = url.replace('&filter=', '');
+				successFunction = function(response) {
+					console.log(response)
+				}
+				ajaxCall(url, 'GET', null, processData=true, contentType='application/json', successFunction);
+			}
+		});
+	
+		$(window).bind('load', function(){
+			$('#homesplash_text_buttons').hide(0).delay(9800).fadeIn();
+		});
+		
+		$(window).resize(function() {
+			$(window).height(); // New height
+			var width = $(window).width(); // New width
+			if (width <= 1100 ) {
+				$('#blog_videoScribe_container').removeClass('col-md-6').addClass('col-md-7');
+				$('#homesplash_right').removeClass('col-md-6').addClass('col-md-5');
+			} else {
+				$('#blog_videoScribe_container').removeClass('col-md-7').addClass('col-md-6');
+				$('#homesplash_right').removeClass('col-md-5').addClass('col-md-6');
+			};
+			if (data != null) {
+				sizeTitleEqualizerSpace(data, '#posts');
+			}
+		});
+		
+
+	</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

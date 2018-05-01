@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block nav %}
+	<div class="navbar col-xs-12">
+		<a href="{% url 'index' %}"><img class="home_arrow" alt="home" src="{% static 'blog/home_arrow.png/' %}"></a>
+		|
+		<a href="{% url 'blog:create_post' %}"> + post</a>
+	</div>
+{% endblock %}
+
+{% block content %}
+
+{% csrf_token %}
+
+<div class="container author_list">
+	<p class="post_title">Authors:</p>
+	{% if user_list %}
+	{% for user in user_list %}
+		<div>
+		<a class="post_author" href="{% url 'blog:author_profile' user.username %}">
+		{{ user.username }}
+		</a>
+		</div>
+	{% endfor %}
+	{% endif %}
+
+</div>
+{% endblock %}

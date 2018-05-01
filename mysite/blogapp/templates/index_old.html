@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+
+	
+{% block content %}
+	<div id="index_page" class="container-fluid">
+	<script>
+		var ajax_call = function() {
+			$.get("http://45.79.145.31:8000/", function(data, status){
+				$("html").html(data);
+		    });
+		};
+		
+		var interval = 1000 * 60 * 1;
+		
+		setInterval(ajax_call, interval);
+		
+		
+	</script>
+	
+	{% csrf_token %}
+	
+	<div id="home_splash" class="row">
+		{% load static %}
+		<div id="blog_videoScribe_container" class="col-md-6">
+			<video muted playsinline autoplay preload="auto" id="blog_videoScribe">
+				<source src="{% static 'blog/blog_videoScribing.mp4' %}" type="video/mp4">
+			</video>
+		</div>
+		<div id="homesplash_right" class="col-md-6">
+			<div id="homesplash_text_container">
+				<div id="homesplash_text-buttons">
+					<div class="homesplash_text">a meta commentary on the creation thereof</div>
+					<div id="login_btn_container">
+						<a href="{% url 'blog:create_account' %}" id="join_btn" class="btn blue_btn">join</a>
+			<!-- 			<div id="homesplash_account">Already have an account?</div> -->
+						<a href="{% url 'login' %}" id="login_btn" class="btn">login</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="home_content">
+		<div class="navbar col-xs-12">
+			<a href="{% url 'blog:user_list' %}">authors</a>
+			|<a href="{% url 'blog:create_post' %}"> + post</a>
+		</div>
+		<div class="new_posts">
+		</div>
+		{% if blogpost_list %}
+		{% for post in blogpost_list %} 
+		<div class="post_container row">
+			<div class="col-sm-2"></div>
+			<div class="post_date_container col-sm-2">
+		        <div class="post_title_equalizer"></div>
+				<p class="post_date">{{ post.pub_date|date:"DATE_FORMAT" }}</p>
+	        </div>
+	        <div class="post col-sm-6 col-lg-4">
+		        <a href="{% url 'blog:post_detail' post.id %}" class="post_title">{{ post.title }}</a>
+		        <div class="post_content">{{ post.content|linebreaks }}</div>
+		        <p>author: {{ post.author }} </p>
+	        </div>
+	        <div class="col-sm-2 col-lg-4"></div>
+	    </div>
+	    {% endfor %} 
+	    {% else %}
+	      <p>There are no posts.</p>
+	    {% endif %}
+		
+	</div>
+	
+</div>	
+{% endblock %}
+

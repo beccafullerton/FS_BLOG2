@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% block nav %}
+	<div class="navbar col-xs-12">
+		<a href="{% url 'index' %}"><img class="home_arrow" alt="home" src="{% static 'blog/home_arrow.png/' %}"></a>
+		|
+		<a href="{% url 'blog:create_post' %}"> + post</a>
+	</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+<p>You have successfully logged out.</p>  
+
+<a href="{% url 'login'%}">Login again.</a>
+</div>
+{% endblock %}

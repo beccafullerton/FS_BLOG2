@@ -1,0 +1,45 @@
+{% extends 'blog/blog_base.html' %}
+{% load static %}
+
+{% csrf_token %}
+
+{% block nav %}
+	<div class="navbar col-xs-12">
+		<a href="{% url 'index' %}"><img class="home_arrow" alt="home" src="{% static 'blog/home_arrow.png/' %}"></a>
+		<a href=""> {{ user.username }} </a>
+		|
+		<a href="{% url 'blog:create_post' %}"> + post</a>
+	</div>
+{% endblock %}
+
+{% block content %}
+
+<div id="post_detail">
+	{% if blogpost_list %}
+	{% for post in blogpost_list %} 
+		<div class="post_container row">
+			<div class="col-sm-2"></div>
+			<div class="post_date_container col-sm-2">
+		        <div class="post_title_equalizer"></div>
+				<p class="post_date">{{ post.pub_date|date:"DATE_FORMAT" }}</p>
+				<p class="edit_date">last edited: {{ post.last_edit_date }}</p>
+	        </div>
+	        <div class="post col-sm-6 col-lg-4">
+		        <a href="{% url 'blog:post_detail' post.id %}" class="post_title">{{ post.title }}</a>
+		        <div class="post_content">{{ post.content|linebreaks }}</div>
+		        <div class="postModifier_glyphs">
+			        <a href="{% url 'blog:delete_post' post.id %}"><img id="delete_glyph" alt="delete post" src="{% static 'blog/delete.png/' %}"></a>
+			        <a href="{% url 'blog:edit_post' post.id %}"><img id="edit_glyph" alt="edit post" src="{% static 'blog/edit.png/' %}"></a>
+		        </div>
+	        </div>
+	        <div class="col-sm-2 col-lg-4"></div>
+	    </div>
+	    {% endfor %} 
+    {% else %}
+      <p>You haven't written any posts yet.</p>
+    {% endif %} 
+	
+</div>
+
+
+{% endblock %}

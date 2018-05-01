@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block nav %}
+	<div class="navbar col-xs-12">
+		<a href="{% url 'index' %}"><img class="home_arrow" alt="home" src="{% static 'blog/home_arrow.png' %}"></a>
+		<a href=""> {% with blogpost_list.all|first as post %}
+			{{ post.author }}
+			{% endwith %} 
+		</a>
+		|
+		<a href="{% url 'blog:create_post' %}"> + post</a>
+	</div>
+{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+
+<div id="post_detail">
+	{% if blogpost_list %}
+	{% for post in blogpost_list %} 
+		<div class="post_container row">
+			<div class="col-sm-2"></div>
+			<div class="post_date_container col-sm-2">
+		        <div class="post_title_equalizer"></div>
+				<p class="post_date">{{ post.pub_date|date:"DATE_FORMAT" }}</p>
+				<p class="edit_date">last edited: {{ post.last_edit_date }}</p>
+	        </div>
+	        <div class="post col-sm-6 col-lg-4">
+		        <a href="{% url 'blog:post_detail' post.id %}" class="post_title">{{ post.title }}</a>
+		        <div class="post_content">{{ post.content|linebreaks }}</div>
+	        </div>
+	        <div class="col-sm-2 col-lg-4"></div>
+	    </div>
+	    {% endfor %} 
+    {% else %}
+      <p class="container">This author hasn't written any posts yet.</p>
+    {% endif %} 
+	
+</div>
+
+
+{% endblock %}

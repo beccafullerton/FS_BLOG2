@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block nav %}
+	<div class="navbar col-xs-12">
+		<a href="{% url 'index' %}"><img class="home_arrow" alt="home" src="{% static 'blog/home_arrow.png' %}"></a>
+		|
+		<a href="{% url 'blog:create_post' %}"> + post</a>
+	</div>
+{% endblock %}
+{% block content %}
+	<div class="post_modification">
+	{% block formPOST %}
+		<form method="POST" action="">
+			{% csrf_token %}
+			{% block formContent %}
+			{% endblock %}
+		</form>
+	{% endblock %}
+	</div>
+{% endblock %}
