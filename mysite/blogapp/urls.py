@@ -16,6 +16,7 @@ urlpatterns += [
 
 urlpatterns += [
 	re_path(r'^posts$', views.getPosts, name='get_posts'),
+	re_path(r'^authors$', views.getAuthors, name='get_authors'),
 	path('post_list/', views.postList.as_view(), name='post_list'),
 	path('create_post/', views.BlogPostCreate.as_view(), name='create_post'),
 	path('post/<int:pk>/', views.PostDetail.as_view(), name='post_detail'),

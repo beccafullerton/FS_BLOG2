@@ -55,16 +55,11 @@ def getPosts(request):
 	info_type = _clean(request, 'info_type')
 
 	posts = BlogPost.objects.filter()
-	authorslist = Author.objects.values_list('name', flat=True).order_by('name')
 	
 	if info_type == 'ids':
 		for post in posts:
 			post_ids.append(post.id)
 		json_return = post_ids
-		
-	if info_type == 'authors':
-		print(authorslist)
-		json_return = authorslist
 	
 	if info_type == 'update_ids':
 		current_post_ids = request.GET.getlist('current_post_ids[]', [])
@@ -79,19 +74,51 @@ def getPosts(request):
 					new_posts.append(post.to_dict())
 					no_new_posts += 1
 			json_return = no_new_posts
+	
+	if filter_string:
+		filters = filter_string.split(",")
+		for f in filters:
+			f_parts = f.split("_")
+			if len(f_parts) == 2:
+				filter_type = f_parts[0]
+				filter_id = f_parts[1]
 		
 	return HttpResponse(
 		json.dumps(json_return),
 		content_type='application/json'
 	 )
+
+def getAuthors(request):
+	format = 'default'
+	filter_string = None
+	authors = []
+	authorslist = []
 	
+	format = _clean(request, 'format', 'default')
+	filter_string = _clean(request, 'filter')
+	
+	authors = Author.objects.all()
+		
+	for author in authors:
+		authorslist.append(
+			[
+				"<div><a href='javascript: filter(\"author\", " + str(author.id) + ", \"" + author.name + "\");'>" + author.name + "</a></div>"
+			]
+		)
+	
+	return HttpResponse(
+		json.dumps(authorslist),
+		content_type='application/json'
+	 )
+
+
 class postList(ListView):
 	model = BlogPost
 	template_name = 'blog/post_list.html'
 	
-	def get_queryset(self):
-		posts = BlogPost.objects.all()
-		return posts
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		return context
 	
 
 
@@ -128,13 +155,13 @@ class UserProfileView(LoginRequiredMixin, ListView):
 		id = user.id
 		return qs.filter(author__user=id).order_by('-pub_date')
 
-class AuthorView(ListView):
-	model = BlogPost
-	template_name = 'author_detail.html'
-	
-	def get_queryset(self):
-		qs = super(AuthorView, self).get_queryset()
-		return BlogPost.objects.filter(author__username__contains=self.kwargs['author']).order_by('-pub_date')
+# class AuthorView(ListView):
+# 	model = BlogPost
+# 	template_name = 'author_detail.html'
+# 	
+# 	def get_queryset(self):
+# 		qs = super(AuthorView, self).get_queryset()
+# 		return BlogPost.objects.filter(author__username__contains=self.kwargs['author']).order_by('-pub_date')
 
 
 
