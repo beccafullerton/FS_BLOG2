@@ -1,11 +1,11 @@
-{% extends 'base.html' %}
+{% extends 'blog/blog_base.html' %}
 
 {% load static %}
 {% block nav %}
 	<div class="navbar col-xs-12">
-		<a href="{% url 'index' %}"><img class="home_arrow" alt="home" src="{% static 'blog/home_arrow.png' %}"></a>
+		<a href="{% url 'index' %}"><img class="home_arrow" alt="home" src=""></a>
 		|
-		<a href="{% url 'blog:create_post' %}"> + post</a>
+		<a href="{% url 'blogapp:create_post' %}"> + post</a>
 	</div>
 {% endblock %}
 {% block content %}

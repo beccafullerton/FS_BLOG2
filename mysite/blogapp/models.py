@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.core.cache import cache
 from django.contrib.auth.models import User
+from django.urls import reverse_lazy, reverse
 
 from django.utils import timezone
 
@@ -30,12 +31,13 @@ class BlogPost(models.Model):
 		return self.title
 	
 	def get_absolute_url(self):
-		return reverse('blogapp:post_detail', kwargs={ 'pk' : self.pk })
+		return reverse('blogapp:blog/post_detail', kwargs={ 'pk' : self.pk })
 
 	def to_dict(self):
 		pub_time = str(self.pub_time)
 		pub_date = str(self.pub_date)
 		last_edit_date = str(self.last_edit_date)
+		author = str(self.author)
 
 		return {
 			'id': self.id,

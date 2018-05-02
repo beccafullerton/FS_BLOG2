@@ -74,14 +74,6 @@ def getPosts(request):
 					new_posts.append(post.to_dict())
 					no_new_posts += 1
 			json_return = no_new_posts
-	
-	if filter_string:
-		filters = filter_string.split(",")
-		for f in filters:
-			f_parts = f.split("_")
-			if len(f_parts) == 2:
-				filter_type = f_parts[0]
-				filter_id = f_parts[1]
 		
 	return HttpResponse(
 		json.dumps(json_return),
@@ -102,7 +94,7 @@ def getAuthors(request):
 	for author in authors:
 		authorslist.append(
 			[
-				"<div><a href='javascript: filter(\"author\", " + str(author.id) + ", \"" + author.name + "\");'>" + author.name + "</a></div>"
+				"<div><a href='javascript:filter(\"author\", " + str(author.id) + ", \"" + author.name + "\");'>" + author.name + "</a></div>"
 			]
 		)
 	
@@ -111,15 +103,41 @@ def getAuthors(request):
 		content_type='application/json'
 	 )
 
-
 class postList(ListView):
 	model = BlogPost
 	template_name = 'blog/post_list.html'
 	
+	def get_queryset(self):
+		qs = super().get_queryset()
+		return BlogPost.objects.all().order_by('-pub_date', '-pub_time')
+	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		return context
+
+class FilterListView(ListView):
+	model = BlogPost
+	template_name = 'blog/filter_list.html'
+	format = 'default'
+	filter_string = None
+	filtered_posts = []
 	
+	def get_queryset(self):
+		format = _clean(self.request, 'format', 'default')
+		filter_string = _clean(self.request, 'filter')
+		
+		if filter_string:
+			filters = filter_string.split(",")
+			for f in filters:
+				f_parts = f.split("_")
+				if len(f_parts) == 2:
+					filter_type = f_parts[0]
+					filter_id = f_parts[1]
+					if filter_type == "author":
+						filtered_posts = BlogPost.objects.filter(author=filter_id)
+# 						return BlogPost.objects.filter(author__username__contains=self.kwargs['author']).order_by('-pub_date')
+		qs = super(FilterListView, self).get_queryset()
+		return filtered_posts.order_by('-pub_date')
 
 
 # USER ACCOUNT VIEWS
@@ -155,14 +173,6 @@ class UserProfileView(LoginRequiredMixin, ListView):
 		id = user.id
 		return qs.filter(author__user=id).order_by('-pub_date')
 
-# class AuthorView(ListView):
-# 	model = BlogPost
-# 	template_name = 'author_detail.html'
-# 	
-# 	def get_queryset(self):
-# 		qs = super(AuthorView, self).get_queryset()
-# 		return BlogPost.objects.filter(author__username__contains=self.kwargs['author']).order_by('-pub_date')
-
 
 
 # BLOG POST VIEWS
@@ -172,7 +182,7 @@ class PostDetail(DetailView):
 	model = BlogPost
 
 class BlogPostCreate(LoginRequiredMixin, CreateView):
-	template_name = 'create_post.html'
+	template_name = 'blog/create_post.html'
 	form_class = CreatePostForm
 	initial = { 'key' : 'value'}
 	
@@ -181,7 +191,8 @@ class BlogPostCreate(LoginRequiredMixin, CreateView):
 		return render(request, self.template_name, { 'form' : form })
 	
 	def form_valid(self, form):
-		form.instance.author = self.request.user
+		author = Author.objects.get(user_id=self.request.user.id)
+		form.instance.author = author
 		return super().form_valid(form)
 		if form.is_valid():
 			form.save()

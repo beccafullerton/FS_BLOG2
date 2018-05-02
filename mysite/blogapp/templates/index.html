@@ -13,12 +13,12 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					<h3 class="modal-title">Filter</h3>
+					<h3 class="modal-title">filter</h3>
 				</div>
 				<div class="modal-body">
 					<ul class="nav nav-tabs" role="tablist">
 						<li role="presentation" class="active">
-							<a href="#authors" aria-controls="people" role="tab" data-toggle="tab">Authors</a>
+							<a href="#authors" aria-controls="people" role="tab" data-toggle="tab">authors</a>
 						</li>
 					</ul>
 				</div>
@@ -76,10 +76,13 @@
 		var post_ids = []
 		var date = new Date();
 		
-		var source_url = 'blogapp/posts?format=default&info_type=&filter='
+		var source_url = 'blogapp/posts?format=default&info_type='
+		var authors_url = 'blogapp/authors?format=default&filter='
+		var filter_url = 'blogapp/filtered_posts?format=default&filter='
 		
 		$(document).ready(function(){
 			$('#homesplash_text_buttons').hide(0);
+			getFilterTable();
 			var width = $(window).width(); // New width
 			if (width < 1100 ) {
 				$('#blog_videoScribe_container').removeClass('col-md-6').addClass('col-md-7');
@@ -90,68 +93,21 @@
 			successFunction = function(data){
 				sizeTitleEqualizerSpace(data, '#posts');
 				getIDs();
-				getFilterTable();
 			}
 			ajaxCall(url, 'GET', null, processData=false, contentType=false, successFunction);
 			
-			function getIDs() {
-				info_type = 'ids'
-				url = source_url.replace('&info_type=', '&info_type=' + info_type);
-				url = url.replace('&filter=', '');
-				successFunction = function(data) {
-					post_ids = data;
-					setInterval(checkForNewPosts, 1000 * 60);
-				}
-				ajaxCall(url, 'GET', null, processData=true, contentType='application/json', successFunction);
-			}
-			
-			var checkForNewPosts = function() {
-				info_type = 'update_ids'
-				url = source_url.replace('&info_type=', '&info_type=' + info_type);
-				url = url.replace('&filter=', '');
-				successFunction = function(response) {
-					console.log(response)
-					text = ' new post'
-					if (response > 1) {
-						text += 's'
-					}
-					no_new_posts = JSON.stringify(response)
-					if (no_new_posts != '["no new posts"]') {
-						$('#new_posts').html(no_new_posts + text)
-						$('#new_posts').show()
-					}
-				}
-				ajaxCall(url, 'GET', {'current_post_ids': post_ids}, processData=true, contentType='application/json', successFunction);
-			}
 			function getFilterTable() {
-				url = 'blogapp/authors?format=default&filter='
-				url = url.replace('&filter=', '');
+				url = authors_url.replace('&filter=', '');
 				successFunction = function(response) {
-					console.log(response)
 					for (var x = 0; x < response.length; x ++) {
 						author = response[x][0]
-						console.log(author)
 						$('#author-table').append(author)
 					}
 				}
 				ajaxCall(url, 'GET', null, processData=true, contentType='application/json', successFunction);
 			}
-			function filter(type, id, desc) {
-				var add = true;
-				for (var x = 0; x < filters.length; x ++) {
-					if (filters[x].id == id && filters[x].type == type) {
-						add = false;
-					}
-				}
-				if (add) {
-					filters.push({'type': type, 'id': id, 'desc': desc});
-				}
-	
-				$('#filter-modal').modal('hide');
-			}
-
 		});
-	
+			
 		$(window).bind('load', function(){
 			$('#homesplash_text_buttons').hide(0).delay(9800).fadeIn();
 		});

@@ -1,0 +1,23 @@
+{% csrf_token %}
+
+{% if object_list %}
+{% for post in object_list %}
+<div class="post_container row">
+	<div class="col-sm-2"></div>
+	<div class="post_date_container col-sm-2">
+		<div id="eqpost-{{ post.id }}" class="post_title_equalizer"></div>
+		<p class="post_date">{{ post.pub_date|date:"DATE_FORMAT" }}</p>
+	</div>
+	<div class="post col-sm-6 col-lg-5">
+		<a href="#" id="post-{{ post.id }}" class="post_title">{{ post.title }}</a>
+		<div class="post_content">{{ post.content|linebreaks }}</div>
+		<p>author: {{ post.author }} </p>
+	</div>
+	<div class="col-sm-2 col-lg-3"></div>
+</div>
+{% endfor %} 
+{% else %}
+<div class="post_container row">
+	<p class="post_title">{{ post.author }} hasn't written any posts yet.</p>
+</div>
+{% endif %}

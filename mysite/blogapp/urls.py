@@ -22,6 +22,6 @@ urlpatterns += [
 	path('post/<int:pk>/', views.PostDetail.as_view(), name='post_detail'),
 	path('post/<int:pk>/edit/', views.BlogPostEdit.as_view(), name='edit_post'),
 	path('post/<int:pk>/delete/', views.BlogPostDelete.as_view(), name='delete_post'),
-# 	path('<author>/profile/', views.AuthorView.as_view(), name='author_profile'),
+	re_path(r'^filtered_posts$', views.FilterListView.as_view(), name='filter_list'),
 ]
 
